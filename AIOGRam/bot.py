@@ -22,6 +22,10 @@ def load_config():
 
 def log_message(message: types.Message, log_file: str):
     """Логирование входящего сообщения в указанный файл."""
+    # Проверяем существование папки и создаем, если необходимо
+    if not os.path.exists(os.path.dirname(log_file)):
+        os.makedirs(os.path.dirname(log_file))
+
     with open(log_file, "a") as file:
         log_text = (f"User ID: {message.from_user.id}\n"
                     f"Chat ID: {message.chat.id}\n"
@@ -42,6 +46,18 @@ async def send_welcome(message: types.Message):
     
     await message.reply(my_str, parse_mode="HTML")
     log_message(message, LOG_PATH)
+
+@dp.message_handler(lambda message: message.forward_from)
+async def handle_forwarded_message(message: types.Message):
+    original_user_id = message.forward_from.id
+    chat_id = message.chat.id
+
+    response_str = (f"Original User ID (from forwarded message): <code>{original_user_id}</code>\n"
+                    f"Chat ID: <code>{chat_id}</code>")
+    
+    await message.reply(response_str, parse_mode="HTML")
+    log_message(message, LOG_PATH)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
