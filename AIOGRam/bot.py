@@ -5,6 +5,7 @@
 # При обработке сообщения /start сначала отправляется приветственное сообщение, а затем вызывается функция логирования.
 
 import os
+from datetime import datetime
 import configparser
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
@@ -22,14 +23,17 @@ def load_config():
 
 def log_message(message: types.Message, log_file: str):
     """Логирование входящего сообщения в указанный файл."""
+    
     # Проверяем существование папки и создаем, если необходимо
     if not os.path.exists(os.path.dirname(log_file)):
         os.makedirs(os.path.dirname(log_file))
-
+    
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    log_text = (f"🔹 {current_time} | User ID: {message.from_user.id} | "
+                f"Chat ID: {message.chat.id} | Text: {message.text}\n")
+    
     with open(log_file, "a") as file:
-        log_text = (f"User ID: {message.from_user.id}\n"
-                    f"Chat ID: {message.chat.id}\n"
-                    f"Text: {message.text}\n\n")
         file.write(log_text)
 
 # Загружаем конфигурацию
@@ -52,8 +56,8 @@ async def handle_forwarded_message(message: types.Message):
     original_user_id = message.forward_from.id
     chat_id = message.chat.id
 
-    response_str = (f"Original User ID (from forwarded message): <code>{original_user_id}</code>\n"
-                    f"Chat ID: <code>{chat_id}</code>")
+    response_str = (f"👤 <b>Original User ID (from forwarded message):</b> <code>{original_user_id}</code>\n"
+                    f"👥 <b>Chat ID:</b> <code>{chat_id}</code>")
     
     await message.reply(response_str, parse_mode="HTML")
     log_message(message, LOG_PATH)
