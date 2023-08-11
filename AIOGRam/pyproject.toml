@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "tg-getid"
+version = "0.1.0"
+description = "Telegram Bot for simple function GetID"
+authors = ["Dmitrii"]
+license = "MiT"
+readme = "README.md"
+packages = [{include = "tg"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
