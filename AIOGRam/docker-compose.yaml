@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  tg_bot:
+    build: .
+    container_name: tg_bot_docker
+    volumes:
+      - .:/app
+    environment:
+      - TG_TOKEN=${TG_TOKEN}
