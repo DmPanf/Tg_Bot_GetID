@@ -5,34 +5,57 @@
 # При обработке сообщения /start сначала отправляется приветственное сообщение, а затем вызывается функция логирования.
 
 import os
-from datetime import datetime
 import configparser
+from datetime import datetime
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+from dotenv import load_dotenv
 
 def load_config():
     """Загрузка конфигурации из bot_config.ini и переменных окружения."""
     config = configparser.ConfigParser()
+    if not os.path.exists('bot_config.ini'):
+        raise FileNotFoundError("bot_config.ini not found!")
     config.read('bot_config.ini')
-    
+    try:
+        log_file = config['LOGS']['path']
+    except KeyError:
+        log_file = "./logs/default_log.txt"  # значение по умолчанию, если не найдено в конфиге
+
+    load_dotenv()  # загрузка переменных окружения из файла .env
     TOKEN = os.environ.get("TG_TOKEN")
-    log_file = config['LOGS']['path']
-    
+    if not TOKEN:
+        raise ValueError("TG_TOKEN is not set in the environment variables or .env file!")
+
     return TOKEN, log_file
+
 
 def log_message(message: types.Message, log_file: str):
     """Логирование входящего сообщения в указанный файл."""
-    
+    log_dir = os.path.dirname(log_file)
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
     # Проверяем существование папки и создаем, если необходимо
     if not os.path.exists(os.path.dirname(log_file)):
         os.makedirs(os.path.dirname(log_file))
     
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-    log_text = (f"🔹 {current_time} | User ID: {message.from_user.id} | "
-                f"Chat ID: {message.chat.id} | Text: {message.text}\n")
+    user_info = (f"{message.date.strftime('%Y-%m-%d %H:%M:%S')} | "
+                 f"User ID: {message.from_user.id} | "
+                 f"Username: {message.from_user.username} | "
+                 f"First Name: {message.from_user.first_name} | "
+                 f"Last Name: {message.from_user.last_name} | "
+                 f"Language: {message.from_user.language_code}")
     
+    chat_info = (f"Chat Type: {message.chat.type} | "
+                 f"Chat ID: {message.chat.id} | "
+                 f"Chat Title: {message.chat.title or 'N/A'}")
+
+    log_text = f"🔹{user_info} | Chat Info: [{chat_info}] | Message Text: {message.text}\n"
+     
     with open(log_file, "a") as file:
         file.write(log_text)
 
