@@ -27,7 +27,7 @@ def load_config():
 def log_message(msg, log_file):
     content_type, chat_type, chat_id = telepot.glance(msg)
     
-    user_info = (f"▫️ {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | "
+    user_info = (f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | "
                  f"User ID: {msg['from']['id']} | "
                  f"Username: {msg['from'].get('username', 'N/A')} | "
                  f"First Name: {msg['from'].get('first_name', 'N/A')} | "
@@ -36,7 +36,7 @@ def log_message(msg, log_file):
     
     chat_info = (f"Chat Type: {chat_type} | Chat ID: {chat_id}")
 
-    log_text = f"🔹{user_info} | Chat Info: [{chat_info}] | Message Text: {msg['text']}\n"
+    log_text = f"▫️ {user_info} | Chat Info: [{chat_info}] | Message Text: {msg['text']}\n"
 
     with open(log_file, "a") as file:
         file.write(log_text)
