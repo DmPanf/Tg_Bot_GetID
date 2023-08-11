@@ -8,6 +8,10 @@
 
 # Конфигурация poetry + Docker
 
+- **`curl -sSL https://install.python-poetry.org | python3 -`**
+- **`export PATH="$HOME/.poetry/bin:$PATH"`**
+- **`source ~/.zshrc`**
+- **`poetry --version`**
 - **`poetry init`**
 - **`poetry add aiogram python-dotenv configparser`**
 - **`docker-compose build`**
